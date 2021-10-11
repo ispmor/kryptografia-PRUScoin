@@ -8,8 +8,7 @@ class Block:
         self.next_hash = None
 
     def __str__(self):
-        return f"BLOCK: {self.prev_hash} - {self.data} ->\n{self.next_hash}"  # unikajmy rekurencji
-        # return f"BLOCK: {self.prev_hash} - {self.data}" # wypisuje tylko ten blok
+        return f"BLOCK: {self.prev_hash} - {self.data} ->\n{self.next_hash}"
 
     def to_json(self):
         return json.dumps(self, default=lambda o: o.__dict__,
@@ -20,10 +19,3 @@ class Block:
         self.data = loaded_dict["data"]
         self.next_hash = loaded_dict["next_hash"]
         return self
-
-
-
-b = Block("inny hash", "PRUS")
-a = Block("jakiś hash",
-          "Możesz wyjść z internatu, ale internat pozostanie w tobie na zawsze")  # to jest błąd logiczny... Nstępnym blokiem jest blok 0 ?
-print(a)

@@ -1,7 +1,8 @@
-import hashlib
 import argparse
-import os.path
+import hashlib
 import json
+import os.path
+
 from block import Block
 
 blocks_collection = dict()
@@ -100,7 +101,6 @@ def init_collection(filename):
         else:
             print("Given input file does not exist. Initializing an empty dict.")
             blocks_collection = dict()
-
 
 
 def save_collection_to_json(filename):
