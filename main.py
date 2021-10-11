@@ -11,7 +11,6 @@ blocks_collection = dict()
 def get_last_block():
     if len(blocks_collection.keys()) == 0:
         return None
-    print(blocks_collection.values())
     return list(filter(lambda key: (blocks_collection[key].next_hash is None),
                        blocks_collection.keys()))[0]
 
@@ -25,8 +24,6 @@ def create_new_block(data):
 
 
 def add_block_to_container(block: Block):
-    print("----" + str(block))
-    print(blocks_collection)
     hashed_block = hashlib.sha256(str(block).encode('utf-8')).hexdigest()
     if hashed_block in blocks_collection:
         raise RuntimeError("You foolish cheater! We know you've manipulated the blocks as such block already exists!")
@@ -41,11 +38,7 @@ def verify_container_cohesion():
         return 0
 
     container_size = len(blocks_collection.keys())
-    first_block_key = list(filter(lambda key: (
-            blocks_collection[key].prev_hash is None),
-                                  blocks_collection.keys()))[0]
-
-    first_block = blocks_collection[first_block_key]
+    first_block, first_block_key = find_genesis()
     if first_block is None or first_block_key is None:
         print("No GENESIS block was found.")
         return 1
@@ -64,6 +57,14 @@ def verify_container_cohesion():
         return 3
 
     return 0
+
+
+def find_genesis():
+    first_block_key = list(filter(lambda key: (
+            blocks_collection[key].prev_hash is None),
+                                  blocks_collection.keys()))[0]
+    first_block = blocks_collection[first_block_key]
+    return first_block, first_block_key
 
 
 def validate_block(block: Block):
@@ -112,7 +113,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--new-block", help="Creates a new block with data provided here and adds it to collection")
     parser.add_argument("--dump", help="Dump collection to .json file at the end", action="store_true")
-    parser.add_argument("--print-genesis", help="At the end prints GENESIS block out")
+    parser.add_argument("--print-genesis", help="At the end prints GENESIS block out", action="store_true")
     parser.add_argument("-i", "--input", help="Input file from where one should load collection")
     args = parser.parse_args()
 
@@ -122,6 +123,9 @@ if __name__ == "__main__":
 
     if args.new_block:
         create_new_block(args.new_block)
+
+    if args.print_genesis:
+        print(find_genesis())
 
     if verify_container_cohesion() == 0 and args.dump:
         save_collection_to_json("pruscoin_collection.json")
