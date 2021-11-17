@@ -13,18 +13,17 @@ class ChainManager:
         self.coins_dict = dict()
         self.users_dict = dict()
         self.coin_to_user = dict()
+        self.header_block = None
 
-    def get_last_block(self):
-        if len(self.blocks_collection.keys()) == 0:
-            return None
-        return list(filter(lambda key: (self.blocks_collection[key].next_hash is None),
-                           self.blocks_collection.keys()))[0]
+    def get_last_block_hash(self):
+        return self.get_hash_from_block(self.header_block)
 
-    def add_block_to_container(self, block: Block):
-        hashed_block = hashlib.sha256(str(block).encode('utf-8')).hexdigest()
-        if hashed_block in self.blocks_collection:
+    def add_block_to_container(self, block: Block, given_hash=None):
+        hashed_block = self.get_hash_from_block(block)
+        if hashed_block in self.blocks_collection or (given_hash is not None and not hashed_block == given_hash):
             raise RuntimeError(
-                "You foolish cheater! We know you've manipulated the blocks as such block already exists!")
+                f"You foolish cheater! We know you've manipulated the blocks! Real hash: {hashed_block}, Given hash: {given_hash} This one contains error " + str(
+                    block))
         else:
             crucial_info = block.data.split(" ")
             if crucial_info[0] not in "GENESIS":
@@ -34,18 +33,23 @@ class ChainManager:
                     raise RuntimeError("Validation check failed")
                 self.coin_to_user[coin_id] = user_to
 
-            if block.prev_hash in self.blocks_collection:
-                self.blocks_collection[block.prev_hash].next_hash = hashed_block
             self.blocks_collection[hashed_block] = block
+            self.header_block = block
+
+    def get_hash_from_block(self, block):
+        return hashlib.sha256(str(block).encode('utf-8')).hexdigest()
 
     def validation_check(self, user_from, coin_id, user_to):
+        user_from = int(user_from)
+        coin_id = int(coin_id)
+        user_to = int(user_to)
         if user_from not in self.users_dict or coin_id not in self.coins_dict or user_to not in self.users_dict:
             return False
         # Todo, sprawdzić userowy walet więc tutaj potrzebny user - Monika dasz radę to dopisac?
         return True
 
     def create_new_block(self, data):
-        last_existing_hash = self.get_last_block()
+        last_existing_hash = self.get_last_block_hash()
         if last_existing_hash is None:
             self.add_block_to_container(Block(None, data))  # Stworzenie bloku Genesis
         else:
@@ -58,22 +62,35 @@ class ChainManager:
         container_size = len(self.blocks_collection.keys())
         first_block, first_block_key = self.find_genesis()
         if first_block is None or first_block_key is None:
-            print("No GENESIS block was found.")
-            return 1
+            raise RuntimeError("No GENESIS block was found.")
 
-        next_hash = first_block.next_hash
-        counter = 1  # Genesis = 1
-        while next_hash is not None:
-            if next_hash not in self.blocks_collection:
-                print(
+        header_hash = self.get_last_block_hash()
+        counter = 0
+        if header_hash not in self.blocks_collection or header_hash is None:
+            raise RuntimeError("Error, Error, wrong header hash")
+
+        while self.blocks_collection[header_hash].prev_hash is not None:
+            if not header_hash == self.get_hash_from_block(self.blocks_collection[header_hash]):
+                raise RuntimeError(
+                    f"Block has been mainpulated: {header_hash} contains data : \n {self.blocks_collection[header_hash]}")
+
+            if self.blocks_collection[header_hash].prev_hash not in self.blocks_collection:
+                raise RuntimeError(
                     "Damn you fool of a Took! Blocks have been manipulated! There is no such next block as indicated!")
-                return 2
-            tmp = self.blocks_collection[next_hash]
-            next_hash = tmp.next_hash
+            tmp = self.blocks_collection[header_hash]
+            header_hash = tmp.prev_hash
             counter += 1
+        genesis = self.blocks_collection[header_hash]
 
+        if not header_hash == self.get_hash_from_block(genesis):
+            raise RuntimeError(
+                f"Block has been mainpulated: {header_hash} contains data : \n {self.blocks_collection[header_hash]}")
+        counter += 1
+        print(counter)
+        print(container_size)
         if counter != container_size:
-            return 3
+            raise RuntimeError(
+                "You foolish cheater! There is an error in you blockchain! You have added artificial blocks!")
 
         return 0
 
@@ -87,29 +104,72 @@ class ChainManager:
     def validate_block(self, block: Block):
         if block.prev_hash is not None:
             if block.prev_hash in self.blocks_collection:
-                if block.next_hash is not None:
-                    if block.next_hash in self.blocks_collection:  # typowy środkowy blok
-                        if block.data is not None:
-                            return 0
-                        print("Blocks with empty data are not allowed.")
-                        return 1
-                    print("Next block indicated does not exist.")
-                    return 1
                 if block.data is not None:
-                    return 0  # blok końcowy
-                print("Blocks with empty data are not allowed.")
-                return 1
-            print("Previous hash has not been found in the collection - manipulation detected.")
-            return 1
-        if block.data is not None:
-            return 0  # blok Genesis
+                    if not self.get_hash_from_block(self.blocks_collection[block.prev_hash]) == block.prev_hash:
+                        print("THIS IS CALCULATED PREV HASH: ",
+                              self.get_hash_from_block(self.blocks_collection[block.prev_hash]))
+                        print("THIS IS GIVEN PREV HASH: ", block.prev_hash)
+                        raise RuntimeError("You foolish cheater! There is an error in you blockchain!")
+                    return 0
+                raise RuntimeError("Blocks with empty data are not allowed.")
+            if block.data is not None:
+                return 0  # blok końcowy
+        else:  # genesis
+            if block.data is not None:
+                return 0
+            raise RuntimeError("Genesis has no data.")
+
+    def get_coins_dict(self):
+        result = {}
+        key = 1
+        value = 1
+        while True:
+            key = int(input("Introduce coin id: (Leave empty to finish)") or "-1")
+            if key < 0:
+                print("Ending")
+                break
+            value = int(input("Introduce coin value: ") or "-1")
+            if value < 0:
+                print("Ending")
+                break
+            result[key] = value
+        return result
+
+    def get_users_dict(self):
+        result = {}
+        while True:
+            key = int(input("Introduce user id: (Leave empty to finish)") or "-1")
+            if key < 0:
+                print("Ending")
+                break
+            value = input("Introduce user Name: ")
+            if value is None:
+                print("Ending")
+                break
+            result[key] = {"name":value}
+        return result
+
+    def get_coins_users_dict(self):
+        result = {}
+
+        while True:
+            key = int(input("Introduce coin id: (Leave empty to finish)") or "-1")
+            if key < 0:
+                print("Ending")
+                break
+            value = int(input("Introduce owner(User) id: ") or "-1")
+            if value <0:
+                print("Ending")
+                break
+            result[key] = value
+        return result
 
     def init_collection(self, filename):
         if filename is None:
             self.blocks_collection = dict()
-            self.coins_dict = {0: 1, 1: 1}
-            self.users_dict = {0: {"name": "Bob"}, 1: {"name": "Rob"}}
-            self.coin_to_user = {0:0, 1:1}  # kownencja {coin_id: user_id} WSTAWIĆ USERA zamiast user_id, albo zrobić powiązanie TODO Monika, jak będziesz miała Userka, mogłabyś?
+            self.coins_dict = self.get_coins_dict()
+            self.users_dict = self.get_users_dict()
+            self.coin_to_user = get_coins_users_dict() # kownencja {coin_id: user_id} WSTAWIĆ USERA zamiast user_id, albo zrobić powiązanie TODO Monika, jak będziesz miała Userka, mogłabyś?
             data = "GENESIS :\n"
             for coin_id, user_id in self.coin_to_user.items():
                 data += f"Create {coin_id} to {self.users_dict[user_id]['name']}. \n"
@@ -120,13 +180,21 @@ class ChainManager:
             if os.path.isfile(filename):
                 with open(filename, 'r') as f:
                     whole_chain_manager = json.load(f)
+                    self.coins_to_user = {int(k): v for k, v in whole_chain_manager["coin_to_user"].items()}
+                    self.users_dict = {int(k): v for k, v in whole_chain_manager["users_dict"].items()}
+                    self.coins_dict = {int(k): v for k, v in whole_chain_manager["coins_dict"].items()}
                     temp_dict = whole_chain_manager["blocks_collection"]
                     for temp_dict_key, temp_dict_object in temp_dict.items():
                         block = Block(None, None).from_dict(temp_dict_object)
-                        self.blocks_collection[temp_dict_key] = block
-                    self.coin_to_user = whole_chain_manager["coin_to_user"]
-                    self.users_dict = whole_chain_manager["users_dict"]
-                    self.coins_dict = whole_chain_manager["coins_dict"]
+                        self.add_block_to_container(block, temp_dict_key)
+                    header_block = Block(None, None).from_dict(whole_chain_manager["header_block"])
+                    if self.get_hash_from_block(header_block) not in self.blocks_collection:
+                        raise RuntimeError("Wrong header block.")
+                    else:
+                        self.header_block = header_block
+
+
+
             else:
                 print("Given input file does not exist. Initializing an empty dict.")
                 self.blocks_collection = dict()
@@ -163,12 +231,21 @@ if __name__ == "__main__":
     chainManager = ChainManager()
     chainManager.init_collection(args.input)
 
-    for i in range(5):
-        chainManager.create_new_block(f"{0} pays {0} to {1}")  # USER pays COIN to USER
-        chainManager.create_new_block(f"{1} pays {0} to {0}")
+    while True:
+        user_from = int(input("SENDER UserID: ") or "-1")
+        if user_from < 0:
+            print("Ending")
+            break
+        coin_id = int(input("Coin ID which is being transferred: ") or "-1")
+        if coin_id < 0:
+            print("Ending")
+            break
+        user_to = int(input("RECEIVER UserID: ") or "-1")
+        if user_to < 0:
+            print("Ending")
+            break
 
-    chainManager.create_new_block(f"{1} pays {1} to {0}")
-    chainManager.save_collection_to_json("test.json")
+        chainManager.create_new_block(f"{user_from} pays {coin_id} to {user_to}")
 
     if args.new_block:
         chainManager.create_new_block(args.new_block)
