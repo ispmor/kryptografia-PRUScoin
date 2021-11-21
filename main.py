@@ -1,41 +1,116 @@
-import argparse
+import json
 
+from block import Block
 from chain_manager import ChainManager
+from user import User
+
+
+def load_json(filename: str) -> dict:
+    input_file = open(filename)
+    data = json.load(input_file)
+    return data
+
+
+def get_users(data: dict) -> dict:
+    users = dict()
+    for name in data['users']:
+        users[name] = User(name)
+    return users
+
+
+def get_coins(data: dict) -> dict:
+    return data['coins']
+
+
+def get_genesis(data: dict) -> dict:
+    return data['genesis']
+
+
+def create_genesis_json(genesis: dict) -> list:
+    result = list()
+    for coin_id, name in genesis.items():
+        result.append(f'Create {coin_id} to {name}')
+    return result # to musi być json??
+
+
+def setup(genesis: dict, users: dict):
+    for coin_id, name in genesis.items():
+        if name not in users:
+            raise RuntimeError(f"Nieznany użytkownik {name}")
+        users[name].wallet[coin_id] = coins[coin_id]
+
+
+def get_transactions(data: dict) -> list:
+    return data['transactions']
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--new-block", help="Creates a new block with data provided here and adds it to collection")
-    parser.add_argument("--dump", help="Dump collection to .json file at the end", action="store_true")
-    parser.add_argument("--print-genesis", help="At the end prints GENESIS block out", action="store_true")
-    parser.add_argument("-i", "--input", help="Input file from where one should load collection")
-    args = parser.parse_args()
+    data = load_json("input.json")
 
-    chainManager = ChainManager()
-    chainManager.init_collection(args.input)
+    users = get_users(data)
+    coins = get_coins(data)
+    genesis = get_genesis(data)
+    transactions = get_transactions(data)
 
-    while True:
-        user_from = int(input("SENDER UserID: ") or "-1")
-        if user_from < 0:
-            print("Ending")
-            break
-        coin_id = int(input("Coin ID which is being transferred: ") or "-1")
-        if coin_id < 0:
-            print("Ending")
-            break
-        user_to = int(input("RECEIVER UserID: ") or "-1")
-        if user_to < 0:
-            print("Ending")
-            break
+    if not len(coins) == len(genesis):
+        raise RuntimeError("Nie zgadza się liczba wpisów z genesis z ilością coinów")
 
-        chainManager.create_new_block(f"{user_from} pays {coin_id} to {user_to}")
-        print(f"{user_from} pays {coin_id} to {user_to}")
+    if not coins.keys() == genesis.keys():
+        raise RuntimeError("Brak zgodności pomiędzy tablicą coinów a przypisaniem do userów")
 
-    if args.new_block:
-        chainManager.create_new_block(args.new_block)
+    setup(genesis, users)
+    genesis_json = create_genesis_json(genesis)
+    genesis_block = Block(None, genesis_json)
+    cm = ChainManager(genesis_block, users, coins)
 
-    if args.print_genesis:
-        print(chainManager.find_genesis())
+    print("POCZĄTKOWY STAN PORTFELI:")
+    for name, user in users.items():
+        print(f'{name}: {user.wallet}')
+    print()
 
-    if chainManager.verify_container_cohesion() == 0 and args.dump:
-        chainManager.save_collection_to_json("pruscoin_collection.json")
+    for transaction in transactions:
+        cm.make_transaction(transaction)
+
+    # –––––––––––––––––––– PRZYKŁAD 1 ––––––––––––––––––––
+    print("-> Przykład 1: POPRAWNY BLOCKCHAIN:")
+    print(cm)
+    print("Poprawny blockchain") if cm.validate() else print("!!! ERROR !!!")
+    print()
+
+    print("STAN PORTFELI PO TRANSAKCJACH:")
+    for name, user in users.items():
+        print(f'{name}: {user.wallet}')
+    print()
+
+    for name, user in users.items():
+        print(f'{name} = {user.checkout()}$')
+
+    # –––––––––––––––––––– PRZYKŁAD 2 ––––––––––––––––––––
+    print("-> Przykład 2: NIEPOPRAWNY BLOCKCHAIN:")
+    cm.blocks[0].data = "['Create 1 to Alec', 'Create 2 to Magnus', 'Create 3 to Magnus', 'Create 4 to Alec', 'Create 5 to Magnus']"
+
+    print("ZMIENIONY I NIEPOPRAWNY BLOCKCHAIN:")
+    print(cm)
+    print("Poprawny blockchain") if cm.validate() else print ("!!! ERROR !!!")
+    print()
+    cm.blocks[0].data = "['Create 1 to Alec', 'Create 2 to Magnus', 'Create 3 to Magnus', 'Create 4 to Magnus', 'Create 5 to Magnus']"
+
+    # –––––––––––––––––––– PRZYKŁAD 3 ––––––––––––––––––––
+    print("-> Przykład 3: NIEPOPRAWNY BLOCKCHAIN ale wykrywa to user, a nie CM")
+    cm.blocks[2].data = "{'data': 'Magnus pays 4 to Alec'}"
+    cm.header_hash = '43ba8ee3395cfde7e5ab4347a5998924e6c967f837fe63df05605733dd853f9c'
+    print("ZMIENIONY BLOCKCHAIN ALE POPRAWNY:")
+    print(cm)
+    print("Poprawny blockchain") if cm.validate() else print ("!!! ERROR !!!")
+    print('Chyba, że...')
+    print("Poprawny blockchain wg usera") if users['Alec'].validate_blockchain() else print ("!!! ERROR WG USERA !!!")
+    print()
+
+    # –––––––––––––––––––– PRZYKŁAD 4 ––––––––––––––––––––
+    print("-> Przykład 4: DOUBLE SPENDING, Magnus płaci coin_id którego nie ma")
+    t = {
+        "from": "Magnus",
+        "to": "Alec",
+        "coin_id": "5"
+    }
+    cm.make_transaction(t)
