@@ -18,28 +18,48 @@ def get_users(data: dict) -> dict:
     return users
 
 
-def get_genesis_json_and_setup(genesis: dict) -> list: # TODO teraz to jest lista a nie json
+def get_coins(data: dict) -> dict:
+    return data['coins']
+
+
+def get_genesis(data: dict) -> dict:
+    return data['genesis']
+
+
+def create_genesis_json(genesis: dict) -> dict:
     result = list()
+    for coin_id, name in genesis.items():
+        result.append(f'Create {coin_id} to {name}')
+    return {'data': result} # to musi być json??
+
+
+def setup(genesis: dict, users: dict):
     for coin_id, name in genesis.items():
         if name not in users:
             raise RuntimeError(f"Nieznany użytkownik {name}")
         users[name].wallet[coin_id] = coins[coin_id]
-        result.append(f'Create {coin_id} to {name}')
-    return result
+
+
+def get_transactions(data: dict) -> list:
+    return data['transactions']
 
 
 if __name__ == "__main__":
     data = load_json("new/input.json")
 
     users = get_users(data)
-    coins = data['coins']
-    genesis = data['genesis']
+    coins = get_coins(data)
+    genesis = get_genesis(data)
+    transactions = get_transactions(data)
+
+    if not len(coins) == len(genesis):
+        raise RuntimeError("Nie zgadza się liczba wpisów z genesis z ilością coinów")
 
     if not coins.keys() == genesis.keys():
         raise RuntimeError("Brak zgodności pomiędzy tablicą coinów a przypisaniem do userów")
 
-    transactions = data['transactions']
-    genesis_json = get_genesis_json_and_setup(genesis) # to będzie zapisane jako dane genesis
+    setup(genesis, users)
+    genesis_json = create_genesis_json(genesis)
     genesis_block = Block(None, genesis_json)
     cm = ChainManager(genesis_block, users, coins)
 
@@ -67,8 +87,8 @@ if __name__ == "__main__":
     # print(cm)
     # print("Poprawny blockchain") if cm.validate() else print ("!!! ERROR !!!")
 
-    cm.blocks[2].data = 'Alec pays 2 to Magnus'
-    cm.header_hash = '763840e37f0c197364d0309ea894c322ec993b9031c0d9893eb72515528619bc'
+    cm.blocks[2].data = 'Magnus pays 4 to Alec'
+    cm.header_hash = 'ec8426931c0842205d645b507117044b0e457996636ec26aaae1abd41d6ca609'
     print("ZMIENIONY BLOCKCHAIN ALE POPRAWNY:")
     print(cm)
     print("Poprawny blockchain") if cm.validate() else print ("!!! ERROR !!!")
