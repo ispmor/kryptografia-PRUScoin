@@ -12,7 +12,7 @@ class User:
         return sum
 
     def validate_blockchain(self):
-        return self.hash == self.cm.header_hash
+        return self.hash == self.cm._get_header_hash()
 
     def __str__(self):
         return self.name

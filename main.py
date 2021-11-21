@@ -74,7 +74,10 @@ if __name__ == "__main__":
     # –––––––––––––––––––– PRZYKŁAD 1 ––––––––––––––––––––
     print("-> Przykład 1: POPRAWNY BLOCKCHAIN:")
     print(cm)
-    print("Poprawny blockchain") if cm.validate() else print("!!! ERROR !!!")
+    print("Weryfikacja chain_manager: ", end='')
+    print("blockchain poprawny") if cm.validate() else print("!!! ERROR !!!")
+    print("Weryfikacja user: ", end='')
+    print("blockchain poprawny") if users['Alec'].validate_blockchain() else print("!!! ERROR !!!")
     print()
 
     print("STAN PORTFELI PO TRANSAKCJACH:")
@@ -85,15 +88,20 @@ if __name__ == "__main__":
     for name, user in users.items():
         print(f'{name} = {user.checkout()}$')
 
+    print()
+
     # –––––––––––––––––––– PRZYKŁAD 2 ––––––––––––––––––––
     print("-> Przykład 2: NIEPOPRAWNY BLOCKCHAIN:")
-    cm.blocks[0].data = "['Create 1 to Alec', 'Create 2 to Magnus', 'Create 3 to Magnus', 'Create 4 to Alec', 'Create 5 to Magnus']"
+    cm.blocks[0].data = "{'data': ['Create 1 to Alec', 'Create 2 to Magnus', 'Create 3 to Magnus', 'Create 4 to Alec', 'Create 5 to Magnus']}"
 
     print("ZMIENIONY I NIEPOPRAWNY BLOCKCHAIN:")
     print(cm)
-    print("Poprawny blockchain") if cm.validate() else print ("!!! ERROR !!!")
+    print("Weryfikacja chain_manager: ", end='')
+    print("blockchain poprawny") if cm.validate() else print ("!!! ERROR !!!")
+    print("Weryfikacja user: ", end='')
+    print("blockchain poprawny") if users['Alec'].validate_blockchain() else print("!!! ERROR !!!")
     print()
-    cm.blocks[0].data = "['Create 1 to Alec', 'Create 2 to Magnus', 'Create 3 to Magnus', 'Create 4 to Magnus', 'Create 5 to Magnus']"
+    cm.blocks[0].data = "{'data': ['Create 1 to Alec', 'Create 2 to Magnus', 'Create 3 to Magnus', 'Create 4 to Magnus', 'Create 5 to Magnus']}"
 
     # –––––––––––––––––––– PRZYKŁAD 3 ––––––––––––––––––––
     print("-> Przykład 3: NIEPOPRAWNY BLOCKCHAIN ale wykrywa to user, a nie CM")
@@ -101,9 +109,10 @@ if __name__ == "__main__":
     cm.header_hash = '43ba8ee3395cfde7e5ab4347a5998924e6c967f837fe63df05605733dd853f9c'
     print("ZMIENIONY BLOCKCHAIN ALE POPRAWNY:")
     print(cm)
-    print("Poprawny blockchain") if cm.validate() else print ("!!! ERROR !!!")
-    print('Chyba, że...')
-    print("Poprawny blockchain wg usera") if users['Alec'].validate_blockchain() else print ("!!! ERROR WG USERA !!!")
+    print("Weryfikacja chain_manager: ", end='')
+    print("blockchain poprawny") if cm.validate() else print("!!! ERROR !!!")
+    print("Weryfikacja user: ", end='')
+    print("blockchain poprawny") if users['Alec'].validate_blockchain() else print ("!!! ERROR !!!")
     print()
 
     # –––––––––––––––––––– PRZYKŁAD 4 ––––––––––––––––––––
