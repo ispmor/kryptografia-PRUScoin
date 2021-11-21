@@ -18,12 +18,12 @@
     {
       "from": "Magnus",
       "to": "Alec",
-      "coin_id": "2"
+      "coin_id": ["2", "3"]
     },
     {
       "from": "Magnus",
       "to": "Alec",
-      "coin_id": "5"
+      "coin_id": ["5"]
     }
   ]
 }

@@ -105,8 +105,9 @@ if __name__ == "__main__":
 
     # –––––––––––––––––––– PRZYKŁAD 3 ––––––––––––––––––––
     print("-> Przykład 3: NIEPOPRAWNY BLOCKCHAIN ale wykrywa to user, a nie CM")
+    # zmieniamy ostatni blok i header hash tak, że wg CM wszystko jest ok
     cm.blocks[2].data = "{'data': 'Magnus pays 4 to Alec'}"
-    cm.header_hash = '43ba8ee3395cfde7e5ab4347a5998924e6c967f837fe63df05605733dd853f9c'
+    cm.header_hash = 'bbb29e13ae8bc4ffee316a5878c5b73739c8ce20b13200cd35b2a4eeba10dac9'
     print("ZMIENIONY BLOCKCHAIN ALE POPRAWNY:")
     print(cm)
     print("Weryfikacja chain_manager: ", end='')

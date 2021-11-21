@@ -8,7 +8,8 @@ def get_hash(blocks: list):
 
 
 def get_transaction_string(t: dict) -> str:
-    return f'{t["from"]} pays {t["coin_id"]} to {t["to"]}'
+    coin_string = ", ".join(t["coin_id"])
+    return f'{t["from"]} pays {coin_string} to {t["to"]}'
 
 
 def list_to_str(list: list):
@@ -63,13 +64,14 @@ class ChainManager:
     def make_transaction(self, transaction):
         sender = self.users[transaction["from"]]
         receiver = self.users[transaction["to"]]
-        coin_id = transaction["coin_id"]
+        coin_ids = transaction["coin_id"]
 
-        if coin_id in sender.wallet:
-            receiver.wallet[coin_id] = self.coins[coin_id]
-            sender.wallet.pop(coin_id)
-        else:
-            raise RuntimeError(f'{sender.name} nie ma id={coin_id} w swoim portfelu!')
+        for coin_id in coin_ids:
+            if coin_id in sender.wallet:
+                receiver.wallet[coin_id] = self.coins[coin_id]
+                sender.wallet.pop(coin_id)
+            else:
+                raise RuntimeError(f'{sender.name} nie ma id={coin_id} w swoim portfelu!')
 
         json = get_transaction_string(transaction)
         self._add(json)
