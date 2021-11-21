@@ -26,11 +26,11 @@ def get_genesis(data: dict) -> dict:
     return data['genesis']
 
 
-def create_genesis_json(genesis: dict) -> dict:
+def create_genesis_json(genesis: dict) -> list:
     result = list()
     for coin_id, name in genesis.items():
         result.append(f'Create {coin_id} to {name}')
-    return {'data': result} # to musi być json??
+    return result # to musi być json??
 
 
 def setup(genesis: dict, users: dict):
@@ -87,8 +87,8 @@ if __name__ == "__main__":
     # print(cm)
     # print("Poprawny blockchain") if cm.validate() else print ("!!! ERROR !!!")
 
-    cm.blocks[2].data = 'Magnus pays 4 to Alec'
-    cm.header_hash = 'ec8426931c0842205d645b507117044b0e457996636ec26aaae1abd41d6ca609'
+    cm.blocks[2].data = "{'data': 'Magnus pays 4 to Alec'}"
+    cm.header_hash = '43ba8ee3395cfde7e5ab4347a5998924e6c967f837fe63df05605733dd853f9c'
     print("ZMIENIONY BLOCKCHAIN ALE POPRAWNY:")
     print(cm)
     print("Poprawny blockchain") if cm.validate() else print ("!!! ERROR !!!")

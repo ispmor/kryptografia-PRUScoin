@@ -60,4 +60,4 @@ class TestMain(TestCase):
     def test_create_genesis_json(self):
         genesis = get_genesis(example_json)
         json = create_genesis_json(genesis)
-        assert json == {'data': ['Create 1 to Alec', 'Create 2 to Magnus', 'Create 3 to Magnus', 'Create 4 to Magnus', 'Create 5 to Magnus']}
+        assert json == ['Create 1 to Alec', 'Create 2 to Magnus', 'Create 3 to Magnus', 'Create 4 to Magnus', 'Create 5 to Magnus']

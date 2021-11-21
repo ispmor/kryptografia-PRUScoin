@@ -39,7 +39,7 @@ class ChainManager:
         return self._get_hash(self.blocks)
 
     def _add(self, data: str):
-        new_block = Block(self.header_hash, data)
+        new_block = Block(self.header_hash, "'" + data + "'")
         self.blocks.append(new_block)
         self.header_hash = self._get_header_hash()
 
