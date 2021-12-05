@@ -1,4 +1,9 @@
 import hashlib
+import rsa
+from Crypto.PublicKey import RSA
+from Crypto.Signature import pkcs1_15
+from Crypto.Hash import SHA256
+
 
 from block import Block
 
@@ -20,10 +25,17 @@ def list_to_str(list: list):
 
 
 class ChainManager:
-    def __init__(self, genesis: Block, users: dict, coins: dict):
+
+    def __int__(self, public_key: str, private_key: str):
+        self.public_key = RSA.importKey(public_key.encode())
+        self._private_key = RSA.importKey(private_key.encode())
+
+
+    def setup(self, genesis: Block, users: dict, coins: dict):
         self.genesis = genesis
         self.blocks = [genesis]
         self.header_hash = self._get_header_hash()
+
 
         # pomocnicze
         self.users = users
@@ -77,3 +89,11 @@ class ChainManager:
         self._add(json)
         sender.hash = self.header_hash
         receiver.hash = self.header_hash
+
+    def sign(self, data):
+        signer =pkcs1_15.new(self._private_key)
+        hashed = SHA256.new(data.encode())
+        return signer.sign(hashed)
+
+    def print_keys(self):
+        print(RSA.p)

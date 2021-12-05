@@ -3,7 +3,9 @@ import json
 from block import Block
 from chain_manager import ChainManager
 from user import User
-
+from Crypto.PublicKey import RSA
+from Crypto import Signature
+from Crypto import Hash
 
 def load_json(filename: str) -> dict:
     input_file = open(filename)
@@ -13,8 +15,8 @@ def load_json(filename: str) -> dict:
 
 def get_users(data: dict) -> dict:
     users = dict()
-    for name in data['users']:
-        users[name] = User(name)
+    for user in data['users']:
+        users[user["name"]] = User(user["name"], user["public_key"], user["private_key"])
     return users
 
 
@@ -26,29 +28,43 @@ def get_genesis(data: dict) -> dict:
     return data['genesis']
 
 
+def verify(message: Hash, signature: bytes, public_key: RSA.RsaKey):
+    signer = Signature.pkcs1_15.new(public_key)
+    signer.verify(message, signature)
+
+
 def create_genesis_json(genesis: dict) -> list:
     result = list()
-    for coin_id, name in genesis.items():
-        result.append(f'Create {coin_id} to {name}')
+    for coin_id, block in genesis.items():
+        result.append(f'Create {coin_id} to {block["user"]}')
     return result # to musi być json??
 
 
-def setup(genesis: dict, users: dict):
-    for coin_id, name in genesis.items():
-        if name not in users:
-            raise RuntimeError(f"Nieznany użytkownik {name}")
-        users[name].wallet[coin_id] = coins[coin_id]
+def setup(genesis: dict, users: dict, cm: ChainManager):
+    for coin_id, coin_user_assignment in genesis.items():
+        if coin_user_assignment["user"] not in users:
+            raise RuntimeError(f"Nieznany użytkownik {coin_user_assignment['user']}")
+        assignment = f"coin_id: {coin_user_assignment['coin_id']}, user: {coin_user_assignment['user']}"
+        if coin_user_assignment["cm_signature"] != cm.sign(assignment):
+            raise RuntimeError("Zły podpis")
+        users[coin_user_assignment['user']].wallet[coin_id] = coins[coin_id]
 
 
 def get_transactions(data: dict) -> list:
     return data['transactions']
 
 
+def get_cm_keys(data):
+    return data["chain_manager"]["public_key"], data["chain_manager"]["private_key"]
+
+
 if __name__ == "__main__":
     data = load_json("input.json")
-
     users = get_users(data)
     coins = get_coins(data)
+    cm_public, cm_private = get_cm_keys(data)
+
+    cm = ChainManager(cm_public, cm_private)
     genesis = get_genesis(data)
     transactions = get_transactions(data)
 
@@ -58,10 +74,10 @@ if __name__ == "__main__":
     if not coins.keys() == genesis.keys():
         raise RuntimeError("Brak zgodności pomiędzy tablicą coinów a przypisaniem do userów")
 
-    setup(genesis, users)
+    setup(genesis, users, cm)
     genesis_json = create_genesis_json(genesis)
     genesis_block = Block(None, genesis_json)
-    cm = ChainManager(genesis_block, users, coins)
+    cm.setup(genesis_block, users, coins)
 
     print("POCZĄTKOWY STAN PORTFELI:")
     for name, user in users.items():
