@@ -4,12 +4,12 @@
   },
   "users": [ {
     "name": "Alec",
-    "public_key": "-----BEGIN PUBLIC KEY-----\\nMIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCy20C81tWpdljXBT71j6IKXgbj\\nldVDmzg4npSlk5C4xsDdTUxF2SEPiZWioPKchW4Mbl0ypMKOdBkAoGJNt7Tjhh+A\\nnnFgPQ30hNmMUAmHomwLh9uE/m2Y4ocKZ6udbp/BTFn3kfC/MQmagMl8AwFxKGYh\\nGL6D6ch9VCnPRrhD/wIDAQAB\\n-----END PUBLIC KEY-----",
-    "private_key": "-----BEGIN RSA PRIVATE KEY-----\\nMIICXAIBAAKBgQCy20C81tWpdljXBT71j6IKXgbjldVDmzg4npSlk5C4xsDdTUxF\\n2SEPiZWioPKchW4Mbl0ypMKOdBkAoGJNt7Tjhh+AnnFgPQ30hNmMUAmHomwLh9uE\\n/m2Y4ocKZ6udbp/BTFn3kfC/MQmagMl8AwFxKGYhGL6D6ch9VCnPRrhD/wIDAQAB\\nAoGAOmLcpUi0gxeBNOAfh2YWDbBYK180OVeoaMNL3ylm6wrm1tdu+LZC1qGhWW+V\\nA4eDP0ef4PJsGLjJmKzCqoA36ipsFRvB/EWKCIRh0AXrsPYwkl8RBFTfAJNOXvYF\\nPOFi0cIvF+eiybLqfsYzvrXMiPuyQLi6t/C+ojcaEHUq40ECQQDKxVP6LECrPZzG\\nVNSe+yqei9bHlSjd7YQ6RJyvYwTyVAHddvH3pwBWfOehWcmMVPip8vt7qkoVHeBJ\\nT/iCitIxAkEA4c7TBLoBryy4KTod6HxkUNi1ad0piUImxSJPCM/rhZvn9jxVt9Xy\\nYfpoDZ5mv5RWggA4ghEI8baFIzXWrgY9LwJAY6a2rqww2/dbpNzr4XXubBytYUic\\n3PRtl3VAy7EOLUm74Osj32HjeJ3J+DH4K09XJa6UiSIXZmlYYK88oms3AQJBAL9+\\ngGHvxGHkUMFVsetpIkGVpjODBSiL2wkvEUtt2FRUZSDjBeaDH6yLiRaTkJtDlyFk\\nQoe7HpStrravf8HRNK0CQDIqFlHLdd+zejCl/uYBOE0ietWMbRZ1Lcshaa4HejIA\\nvQjnmiLH4wDd+jnyHK2B5HUuaqCBrBPXSgxFekzr1ik=\\n-----END RSA PRIVATE KEY-----"
+    "public_key": "-----BEGIN PUBLIC KEY-----\nMIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCy20C81tWpdljXBT71j6IKXgbj\nldVDmzg4npSlk5C4xsDdTUxF2SEPiZWioPKchW4Mbl0ypMKOdBkAoGJNt7Tjhh+A\nnnFgPQ30hNmMUAmHomwLh9uE/m2Y4ocKZ6udbp/BTFn3kfC/MQmagMl8AwFxKGYh\nGL6D6ch9VCnPRrhD/wIDAQAB\n-----END PUBLIC KEY-----",
+    "private_key": "-----BEGIN RSA PRIVATE KEY-----\nMIICXAIBAAKBgQCy20C81tWpdljXBT71j6IKXgbjldVDmzg4npSlk5C4xsDdTUxF\n2SEPiZWioPKchW4Mbl0ypMKOdBkAoGJNt7Tjhh+AnnFgPQ30hNmMUAmHomwLh9uE\n/m2Y4ocKZ6udbp/BTFn3kfC/MQmagMl8AwFxKGYhGL6D6ch9VCnPRrhD/wIDAQAB\nAoGAOmLcpUi0gxeBNOAfh2YWDbBYK180OVeoaMNL3ylm6wrm1tdu+LZC1qGhWW+V\nA4eDP0ef4PJsGLjJmKzCqoA36ipsFRvB/EWKCIRh0AXrsPYwkl8RBFTfAJNOXvYF\nPOFi0cIvF+eiybLqfsYzvrXMiPuyQLi6t/C+ojcaEHUq40ECQQDKxVP6LECrPZzG\nVNSe+yqei9bHlSjd7YQ6RJyvYwTyVAHddvH3pwBWfOehWcmMVPip8vt7qkoVHeBJ\nT/iCitIxAkEA4c7TBLoBryy4KTod6HxkUNi1ad0piUImxSJPCM/rhZvn9jxVt9Xy\nYfpoDZ5mv5RWggA4ghEI8baFIzXWrgY9LwJAY6a2rqww2/dbpNzr4XXubBytYUic\n3PRtl3VAy7EOLUm74Osj32HjeJ3J+DH4K09XJa6UiSIXZmlYYK88oms3AQJBAL9+\ngGHvxGHkUMFVsetpIkGVpjODBSiL2wkvEUtt2FRUZSDjBeaDH6yLiRaTkJtDlyFk\nQoe7HpStrravf8HRNK0CQDIqFlHLdd+zejCl/uYBOE0ietWMbRZ1Lcshaa4HejIA\nvQjnmiLH4wDd+jnyHK2B5HUuaqCBrBPXSgxFekzr1ik=\n-----END RSA PRIVATE KEY-----"
   }, {
     "name": "Magnus",
-    "public_key": "-----BEGIN PUBLIC KEY-----\\nMIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQChjUeaBZqiUri3vI5pCNO1mGl0\\nhphKF4/6l/BUY/jsqwzj0//9fr250MGOPUuleEQePJjNCvHhODNWakC2ibMDu+dr\\nw0AcokZ15BIbxe8hhByjGa5+OZsAmZqqhUhmuiYl7bLwUHvOs6LebMSaxw1uhvk3\\nSYWSHAnKjmknJK5HWQIDAQAB\\n-----END PUBLIC KEY-----",
-    "private_key": "-----BEGIN RSA PRIVATE KEY-----\\nMIICXAIBAAKBgQChjUeaBZqiUri3vI5pCNO1mGl0hphKF4/6l/BUY/jsqwzj0//9\\nfr250MGOPUuleEQePJjNCvHhODNWakC2ibMDu+drw0AcokZ15BIbxe8hhByjGa5+\\nOZsAmZqqhUhmuiYl7bLwUHvOs6LebMSaxw1uhvk3SYWSHAnKjmknJK5HWQIDAQAB\\nAoGAAYuQjexpdw2pKaIP5KOfzsKsmN+OsQAPsaW8DTqVj2yavMpyzjG6Tn7XfcJK\\nqRmri8nS66cj+sj8U2JvHa/XJU6XWmwA0wyauEsTrFT1E7ZXfCcnG14rvfW5xI9X\\n9jGq+Q6qg5OT2WG2soQrmeXVkUA3o8X/ksNuPn0mICjwq0cCQQC538y04Px5N/5M\\npS+/IwOMHCfsnXnjJQpnr/z5715k/KEkRut1tu8u7Kjubp1jrkbYN5TF0QP+GQhF\\nbuI3v9OTAkEA3oBd6BXdNibPEpKIQU3aAMUg/8OMW7mijchBaI6EkfIoBdYavBnn\\nzAOB2cUdisv1muzt4FbJvfaCafF/o/ck4wJABPI/sFCMZ21mBwQeUSfNYF0fctx9\\n8d16eWflg4ErMeTHJP/+JBPKKaWCmVW4On7Yw8g23UzCnnBsF+zreDBSoQJBAIvZ\\nUyzU0T2AFxctUsb5D9T8Ekmvt0DP5QQIolP9gAXblpxUfmlMPw1UBwHBi1f56l1+\\nHeWrpxHnJwE/8WI1rNECQBGdTzEkXXVGDJM8ZNINpvjnAKJHX6GP0GMhZCJcBEDS\\nRlLpWZqQKZ9z6DFkAbLWFX1eUZLsmLTFRTo2xnb8wc8=\\n-----END RSA PRIVATE KEY-----"
+    "public_key": "-----BEGIN PUBLIC KEY-----\nMIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQChjUeaBZqiUri3vI5pCNO1mGl0\nhphKF4/6l/BUY/jsqwzj0//9fr250MGOPUuleEQePJjNCvHhODNWakC2ibMDu+dr\nw0AcokZ15BIbxe8hhByjGa5+OZsAmZqqhUhmuiYl7bLwUHvOs6LebMSaxw1uhvk3\nSYWSHAnKjmknJK5HWQIDAQAB\n-----END PUBLIC KEY-----",
+    "private_key": "-----BEGIN RSA PRIVATE KEY-----\nMIICXAIBAAKBgQChjUeaBZqiUri3vI5pCNO1mGl0hphKF4/6l/BUY/jsqwzj0//9\nfr250MGOPUuleEQePJjNCvHhODNWakC2ibMDu+drw0AcokZ15BIbxe8hhByjGa5+\nOZsAmZqqhUhmuiYl7bLwUHvOs6LebMSaxw1uhvk3SYWSHAnKjmknJK5HWQIDAQAB\nAoGAAYuQjexpdw2pKaIP5KOfzsKsmN+OsQAPsaW8DTqVj2yavMpyzjG6Tn7XfcJK\nqRmri8nS66cj+sj8U2JvHa/XJU6XWmwA0wyauEsTrFT1E7ZXfCcnG14rvfW5xI9X\n9jGq+Q6qg5OT2WG2soQrmeXVkUA3o8X/ksNuPn0mICjwq0cCQQC538y04Px5N/5M\npS+/IwOMHCfsnXnjJQpnr/z5715k/KEkRut1tu8u7Kjubp1jrkbYN5TF0QP+GQhF\nbuI3v9OTAkEA3oBd6BXdNibPEpKIQU3aAMUg/8OMW7mijchBaI6EkfIoBdYavBnn\nzAOB2cUdisv1muzt4FbJvfaCafF/o/ck4wJABPI/sFCMZ21mBwQeUSfNYF0fctx9\n8d16eWflg4ErMeTHJP/+JBPKKaWCmVW4On7Yw8g23UzCnnBsF+zreDBSoQJBAIvZ\nUyzU0T2AFxctUsb5D9T8Ekmvt0DP5QQIolP9gAXblpxUfmlMPw1UBwHBi1f56l1+\nHeWrpxHnJwE/8WI1rNECQBGdTzEkXXVGDJM8ZNINpvjnAKJHX6GP0GMhZCJcBEDS\nRlLpWZqQKZ9z6DFkAbLWFX1eUZLsmLTFRTo2xnb8wc8=\n-----END RSA PRIVATE KEY-----"
   }],
   "coins": {
     "1": 1,
@@ -22,28 +22,28 @@
     "1": {
       "coin_id":"1",
       "user":"Alec",
-      "cm_signature": ""
+      "cm_signature": "a42T77YCqH5i2i+jsT4tERynCeAAzo83CwC/2QlV5l/aPFS+pHp3XRoIqEhGM7WnuOzxmQcf7X8JfrU7Ci8LWtnEjz26OYA5CNnQ036z3E+yt8Ck4Rah9GypO+N5pLnSSC4V0BmUC1RbRfrvvwdf+GcbpjML4y2dJxCZGOQqjVU="
     },
 
     "2": {
       "coin_id":"2",
       "user":"Magnus",
-      "cm_signature": ""
+      "cm_signature": "aa5PS+1X7qbK9Rf+5iM2Wj+P8uAu+GLZ9t8OjI7oD4uXtDYkmAZkZniOHXWcLUiuLbNLXZ2q6b+2U1aqBxYlqN1YqxuD2qgvjU7GLKTnrZDegFbHxvOx4g7R+XAO4Xcki+kcd4iqezfJmp+CP0IjFkd60oaVVkwVzqRTXE+PkgQ="
     },
     "3": {
       "coin_id":"3",
       "user":"Magnus",
-      "cm_signature": ""
+      "cm_signature": "J5nkUXKbU9ueN1Lp0nPQC5ZHLqmH9IHQL7VYptEN++Hk0+X8OKnBRjC/k4cizV2wCcgR1WuAoUHPp2zR/NglNGqFWDKKQDemcnQqht9OrZTJAJyyvC0+9C5+x0aNithW+cUb7VND4e5gjLOxnRCLEySZhUhUht92Epk9XR1y6Nc="
     },
     "4": {
       "coin_id":"4",
       "user":"Magnus",
-      "cm_signature": ""
+      "cm_signature": "Um6xgKHIAcMUA6R0OvwF2OzUBnMlJ9grs+fjSrHKDyiisstoD9Hiz9KcnWMHdhO6+wYdKgk97Otz8YJS9IXyZRB7miLuZ1sT8X8NlVsOW/EjYW05B54WrCCeG645rnK/TBIfVpalnz19fQxfjE6xrk0xrXWI5ThgjtXFwrckFso="
     },
     "5": {
       "coin_id":"5",
       "user":"Magnus",
-      "cm_signature": ""
+      "cm_signature": "i/sRJRHQt0LqNMOP+x2GbacpCxbHxjtlfJ9c3kKMactM2VJHka7eVFPBnSYb1AFsQoikvlBPPN1twxn3orSNFlwq+r94tLgE5Co+ntXHL1PgRfvTSN9FxtENTNVK9IUkdHUhYmIC9chwyNrnSY8yqSj3jy1GjSOHNjq98+JNmPw="
     }
   },
   "transactions": [

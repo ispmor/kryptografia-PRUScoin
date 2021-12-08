@@ -6,6 +6,7 @@ from user import User
 from Crypto.PublicKey import RSA
 from Crypto import Signature
 from Crypto import Hash
+import base64
 
 def load_json(filename: str) -> dict:
     input_file = open(filename)
@@ -45,7 +46,7 @@ def setup(genesis: dict, users: dict, cm: ChainManager):
         if coin_user_assignment["user"] not in users:
             raise RuntimeError(f"Nieznany użytkownik {coin_user_assignment['user']}")
         assignment = f"coin_id: {coin_user_assignment['coin_id']}, user: {coin_user_assignment['user']}"
-        if coin_user_assignment["cm_signature"] != cm.sign(assignment):
+        if coin_user_assignment["cm_signature"] != base64.b64encode(cm.sign(assignment)).decode():
             raise RuntimeError("Zły podpis")
         users[coin_user_assignment['user']].wallet[coin_id] = coins[coin_id]
 
