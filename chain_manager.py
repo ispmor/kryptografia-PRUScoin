@@ -37,7 +37,7 @@ class ChainManager:
         for name, user in users.items():
             user.hash = self.header_hash
             user.cm = self
-            self.other_public_keys[name] = user.public_key
+            self.other_public_keys['cm'] = self.public_key
 
     def setup(self, genesis: Block):
         self.genesis = genesis
