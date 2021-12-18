@@ -1,4 +1,5 @@
 import hashlib
+import rsa
 
 from block import Block
 
@@ -20,10 +21,14 @@ def list_to_str(list: list):
 
 
 class ChainManager:
-    def __init__(self, genesis: Block, users: dict, coins: dict):
-        self.genesis = genesis
-        self.blocks = [genesis]
-        self.header_hash = self._get_header_hash()
+    def __init__(self, users: dict, coins: dict):
+        self.genesis = None
+        self.blocks = None
+        self.header_hash = None
+        public, private = rsa.newkeys(1024)
+        self.public_key = public
+        self._private_key = private
+        self.other_public_keys = {}
 
         # pomocnicze
         self.users = users
@@ -32,6 +37,12 @@ class ChainManager:
         for name, user in users.items():
             user.hash = self.header_hash
             user.cm = self
+            self.other_public_keys[name] = user.public_key
+
+    def setup(self, genesis: Block):
+        self.genesis = genesis
+        self.blocks = [genesis]
+        self.header_hash = self._get_header_hash()
 
     def _get_hash(self, data: list):
         return hashlib.sha256(list_to_str(data).encode('utf-8')).hexdigest()
