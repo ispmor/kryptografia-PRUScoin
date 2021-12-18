@@ -68,7 +68,7 @@ if __name__ == "__main__":
     setup(genesis, users) # przypisz userom coiny
     genesis_json = create_genesis_json(genesis)
     cm = ChainManager(users, coins)
-    genesis_block = Block(None, genesis_json, cm._private_key)
+    genesis_block = Block(None, genesis_json, cm._private_key, None)
     cm.setup(genesis_block)
 
     print("POCZĄTKOWY STAN PORTFELI:")
@@ -97,4 +97,5 @@ if __name__ == "__main__":
         print(f'{name} = {user.checkout()}$')
 
     print()
-    print('Sprawdzenie podpisu genesis:', users['Alec'].validate_genesis_signature())
+    print('Sprawdzenie podpisu genesis (Alec):', users['Alec'].validate_genesis_signature())
+    print('Sprawdzenie wszystkich podpisów (CM):', cm.validate_signatures())

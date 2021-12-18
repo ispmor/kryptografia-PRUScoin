@@ -3,9 +3,10 @@ import rsa
 
 
 class Block:
-    def __init__(self, prev_hash, data, private_key):
+    def __init__(self, prev_hash, data, private_key, sender):
         self.prev_hash = prev_hash
         self.original_data = str(data)
+        self.sender = sender # do weryfikacji podpisów
         #self.signature = rsa.encrypt(self.original_data.encode(), private_key)
         self.signature = rsa.sign(self.original_data.encode(), private_key, 'SHA-1')
         self.set_data(data)

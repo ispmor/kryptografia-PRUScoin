@@ -1,5 +1,6 @@
 import hashlib
 import rsa
+from rsa.pkcs1 import decrypt
 
 from block import Block
 
@@ -51,8 +52,8 @@ class ChainManager:
     def _get_header_hash(self):
         return self._get_hash(self.blocks)
 
-    def _add(self, data: str, sender_private_key):
-        new_block = Block(self.header_hash, "'" + data + "'", sender_private_key)
+    def _add(self, data: str, sender_private_key, sender):
+        new_block = Block(self.header_hash, "'" + data + "'", sender_private_key, sender)
         self.blocks.append(new_block)
         self.header_hash = self._get_header_hash()
 
@@ -73,6 +74,19 @@ class ChainManager:
             return False
         return True
 
+    def validate_signatures(self) -> bool:
+        for i in range(1, len(self.blocks)):
+            block_to_check = self.blocks[i]
+            public_key = self.other_public_keys[block_to_check.sender.name]
+            decrypted = rsa.verify(
+                block_to_check.original_data.encode(),
+                block_to_check.signature,
+                public_key
+            )
+            if decrypted != 'SHA-1':
+                return False
+        return True
+
     def make_transaction(self, transaction):
         sender = self.users[transaction["from"]]
         receiver = self.users[transaction["to"]]
@@ -86,6 +100,6 @@ class ChainManager:
                 raise RuntimeError(f'{sender.name} nie ma id={coin_id} w swoim portfelu!')
 
         json = get_transaction_string(transaction)
-        self._add(json, sender._private_key)
+        self._add(json, sender._private_key, sender)
         sender.hash = self.header_hash
         receiver.hash = self.header_hash
