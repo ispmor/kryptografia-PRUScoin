@@ -15,7 +15,9 @@ Program nie przyjmuje argumentów od użytkownika.
 Program nie zapisuje blockchainu do pliku. (Wynika to ze zmiany koncepcji
 w porównaniu z pierwszym kamieniem milowym, pozbyliśmy się słownika).
 
-```virtualenv env```
-```source env/bin/activate```
-```(env)$: pip install -r requirements.txt```
-```(env)$: python main.py```
+```
+virtualenv env
+source env/bin/activate
+(env)$: pip install -r requirements.txt
+(env)$: python main.py
+```
