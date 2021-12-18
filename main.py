@@ -68,7 +68,7 @@ if __name__ == "__main__":
     setup(genesis, users) # przypisz userom coiny
     genesis_json = create_genesis_json(genesis)
     cm = ChainManager(users, coins)
-    genesis_block = Block(None, genesis_json)
+    genesis_block = Block(None, genesis_json, cm.public_key)
     cm.setup(genesis_block)
 
     print("POCZĄTKOWY STAN PORTFELI:")

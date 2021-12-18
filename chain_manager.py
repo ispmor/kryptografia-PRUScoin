@@ -50,8 +50,8 @@ class ChainManager:
     def _get_header_hash(self):
         return self._get_hash(self.blocks)
 
-    def _add(self, data: str):
-        new_block = Block(self.header_hash, "'" + data + "'")
+    def _add(self, data: str, sender_public_key):
+        new_block = Block(self.header_hash, "'" + data + "'", sender_public_key)
         self.blocks.append(new_block)
         self.header_hash = self._get_header_hash()
 
@@ -85,6 +85,6 @@ class ChainManager:
                 raise RuntimeError(f'{sender.name} nie ma id={coin_id} w swoim portfelu!')
 
         json = get_transaction_string(transaction)
-        self._add(json)
+        self._add(json, sender.public_key)
         sender.hash = self.header_hash
         receiver.hash = self.header_hash
