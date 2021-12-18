@@ -61,7 +61,7 @@ class ChainManager:
         result = ''
         for block in self.blocks:
             result += str(block) + '\n'
-        result += f'HEADER HASH:\t{self.header_hash}'
+        result += f'\nHEADER HASH:\t{self.header_hash}\n'
         return result
 
     def validate(self) -> bool:

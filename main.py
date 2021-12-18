@@ -52,6 +52,7 @@ def assign_other_public_keys(users: dict):
 if __name__ == "__main__":
     data = load_json("input.json")
 
+    # ––– 1. CREATE IDENTITY –––
     users = get_users(data)
     assign_other_public_keys(users)
 
@@ -65,6 +66,7 @@ if __name__ == "__main__":
     if not coins.keys() == genesis.keys():
         raise RuntimeError("Brak zgodności pomiędzy tablicą coinów a przypisaniem do userów")
 
+    # ––– 2. CREATE BLOCKCHAIN –––
     setup(genesis, users) # przypisz userom coiny
     genesis_json = create_genesis_json(genesis)
     cm = ChainManager(users, coins)
@@ -76,26 +78,33 @@ if __name__ == "__main__":
         print(f'{name}: {user.wallet}')
     print()
 
+    # ––– 3. PRZYKŁADY TRANSAKCJI –––
     for transaction in transactions:
         cm.make_transaction(transaction)
-
-    # –––––––––––––––––––– PRZYKŁAD 1 ––––––––––––––––––––
-    print("-> Przykład 1: POPRAWNY BLOCKCHAIN:")
-    print(cm)
-    print("Weryfikacja chain_manager: ", end='')
-    print("blockchain poprawny") if cm.validate() else print("!!! ERROR !!!")
-    print("Weryfikacja user: ", end='')
-    print("blockchain poprawny") if users['Alec'].validate_blockchain() else print("!!! ERROR !!!")
-    print()
 
     print("STAN PORTFELI PO TRANSAKCJACH:")
     for name, user in users.items():
         print(f'{name}: {user.wallet}')
     print()
 
+    print('SUMA:')
     for name, user in users.items():
         print(f'{name} = {user.checkout()}$')
-
     print()
-    print('Sprawdzenie podpisu genesis (Alec):', users['Alec'].validate_genesis_signature())
-    print('Sprawdzenie wszystkich podpisów (CM):', cm.validate_signatures())
+
+    # ––– 4. WALIDACJA GENESIS –––
+    print('SPRAWDZENIE PODPISU GENESIS (Alec):', users['Alec'].validate_genesis_signature())
+    print()
+    
+    # ––– 5. WALIDACJA TRANSAKCJI –––
+    print('SPRAWDZENIE WSZYSTKICH PODPISÓW (CM):', cm.validate_signatures())
+    print()
+
+    # ––– 6. WALIDACJA Z HASHAMI –––
+    print("PRZYKŁADOWY BLOCKCHAIN I WALIDACJA Z HASHAMI: ")
+    print(cm)
+    print("Weryfikacja chain_manager: ", end='')
+    print("OK") if cm.validate() else print("!!! ERROR !!!")
+    print("Weryfikacja user: ", end='')
+    print("OK") if users['Alec'].validate_blockchain() else print("!!! ERROR !!!")
+    print()

@@ -12,7 +12,7 @@ class Block:
         self.set_data(data)
 
     def __str__(self):
-        return f"BLOCK:\n\tpoprzedni hash: {self.prev_hash}\n\t-> {self.data}"
+        return f"\nBLOCK:\n\t-> {self.prev_hash} (poprzedni hash)\n\t-> {self.data}"
 
     def set_data(self, data):
         self.data = "{'data': " + str(data) + ", 'signature': " + str(self.signature) + "}"
