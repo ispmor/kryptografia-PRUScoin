@@ -20,5 +20,15 @@ class User:
     def validate_blockchain(self):
         return self.hash == self.cm._get_header_hash()
 
+    def validate_genesis_signature(self):
+        genesis = self.cm.genesis
+        cm_public_key = self.other_public_keys['cm']
+        decrypted = rsa.verify(
+            genesis.original_data.encode(), 
+            genesis.signature,
+            cm_public_key
+        )
+        return decrypted == 'SHA-1'
+
     def __str__(self):
         return self.name

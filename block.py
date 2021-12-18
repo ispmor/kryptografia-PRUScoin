@@ -6,7 +6,8 @@ class Block:
     def __init__(self, prev_hash, data, private_key):
         self.prev_hash = prev_hash
         self.original_data = str(data)
-        self.signature = rsa.encrypt(self.original_data.encode(), private_key)
+        #self.signature = rsa.encrypt(self.original_data.encode(), private_key)
+        self.signature = rsa.sign(self.original_data.encode(), private_key, 'SHA-1')
         self.set_data(data)
 
     def __str__(self):

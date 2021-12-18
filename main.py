@@ -97,3 +97,4 @@ if __name__ == "__main__":
         print(f'{name} = {user.checkout()}$')
 
     print()
+    print('Sprawdzenie podpisu genesis:', users['Alec'].validate_genesis_signature())
