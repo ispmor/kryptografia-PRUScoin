@@ -5,7 +5,8 @@ import rsa
 class Block:
     def __init__(self, prev_hash, data, private_key):
         self.prev_hash = prev_hash
-        self.signature = rsa.encrypt(str(data).encode(), private_key)
+        self.original_data = str(data)
+        self.signature = rsa.encrypt(self.original_data.encode(), private_key)
         self.set_data(data)
 
     def __str__(self):
