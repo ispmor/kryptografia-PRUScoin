@@ -10,7 +10,7 @@ class Block:
         return f"BLOCK:\t\t{self.prev_hash} -> {self.data}"
 
     def set_data(self, data):
-        self.data = "{'data': " + str(data) + "}"
+        self.data = {"data": str(data)}
 
     def to_json(self):
         return json.dumps(self, default=lambda o: o.__dict__,
