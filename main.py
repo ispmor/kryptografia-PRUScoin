@@ -43,11 +43,18 @@ def setup(genesis: dict, users: dict):
 def get_transactions(data: dict) -> list:
     return data['transactions']
 
+def assign_other_public_keys(users: dict):
+    for name1, user1 in users.items():
+        for name2, user2 in users.items():
+            if user1 is not user2:
+                user1.other_public_keys[name2] = user2.public_key
 
 if __name__ == "__main__":
     data = load_json("input.json")
 
     users = get_users(data)
+    assign_other_public_keys(users)
+
     coins = get_coins(data)
     genesis = get_genesis(data)
     transactions = get_transactions(data)
@@ -58,7 +65,7 @@ if __name__ == "__main__":
     if not coins.keys() == genesis.keys():
         raise RuntimeError("Brak zgodności pomiędzy tablicą coinów a przypisaniem do userów")
 
-    setup(genesis, users)
+    setup(genesis, users) # przypisz userom coiny
     genesis_json = create_genesis_json(genesis)
     genesis_block = Block(None, genesis_json)
     cm = ChainManager(genesis_block, users, coins)
