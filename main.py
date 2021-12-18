@@ -97,38 +97,3 @@ if __name__ == "__main__":
         print(f'{name} = {user.checkout()}$')
 
     print()
-
-    # –––––––––––––––––––– PRZYKŁAD 2 ––––––––––––––––––––
-    print("-> Przykład 2: NIEPOPRAWNY BLOCKCHAIN:")
-    cm.blocks[0].data = "{'data': ['Create 1 to Alec', 'Create 2 to Magnus', 'Create 3 to Magnus', 'Create 4 to Alec', 'Create 5 to Magnus']}"
-
-    print("ZMIENIONY I NIEPOPRAWNY BLOCKCHAIN:")
-    print(cm)
-    print("Weryfikacja chain_manager: ", end='')
-    print("blockchain poprawny") if cm.validate() else print ("!!! ERROR !!!")
-    print("Weryfikacja user: ", end='')
-    print("blockchain poprawny") if users['Alec'].validate_blockchain() else print("!!! ERROR !!!")
-    print()
-    cm.blocks[0].data = "{'data': ['Create 1 to Alec', 'Create 2 to Magnus', 'Create 3 to Magnus', 'Create 4 to Magnus', 'Create 5 to Magnus']}"
-
-    # –––––––––––––––––––– PRZYKŁAD 3 ––––––––––––––––––––
-    print("-> Przykład 3: NIEPOPRAWNY BLOCKCHAIN ale wykrywa to user, a nie CM")
-    # zmieniamy ostatni blok i header hash tak, że wg CM wszystko jest ok
-    cm.blocks[2].data = "{'data': 'Magnus pays 4 to Alec'}"
-    cm.header_hash = 'bbb29e13ae8bc4ffee316a5878c5b73739c8ce20b13200cd35b2a4eeba10dac9'
-    print("ZMIENIONY BLOCKCHAIN ALE POPRAWNY:")
-    print(cm)
-    print("Weryfikacja chain_manager: ", end='')
-    print("blockchain poprawny") if cm.validate() else print("!!! ERROR !!!")
-    print("Weryfikacja user: ", end='')
-    print("blockchain poprawny") if users['Alec'].validate_blockchain() else print ("!!! ERROR !!!")
-    print()
-
-    # –––––––––––––––––––– PRZYKŁAD 4 ––––––––––––––––––––
-    print("-> Przykład 4: DOUBLE SPENDING, Magnus płaci coin_id którego nie ma")
-    t = {
-        "from": "Magnus",
-        "to": "Alec",
-        "coin_id": "5"
-    }
-    cm.make_transaction(t)
