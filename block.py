@@ -3,9 +3,9 @@ import rsa
 
 
 class Block:
-    def __init__(self, prev_hash, data, public_key):
+    def __init__(self, prev_hash, data, private_key):
         self.prev_hash = prev_hash
-        self.signature = rsa.encrypt(str(data).encode(), public_key)
+        self.signature = rsa.encrypt(str(data).encode(), private_key)
         self.set_data(data)
 
     def __str__(self):
