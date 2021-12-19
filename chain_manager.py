@@ -1,4 +1,6 @@
 import hashlib
+import rsa
+from rsa.pkcs1 import decrypt
 
 from block import Block
 
@@ -20,10 +22,14 @@ def list_to_str(list: list):
 
 
 class ChainManager:
-    def __init__(self, genesis: Block, users: dict, coins: dict):
-        self.genesis = genesis
-        self.blocks = [genesis]
-        self.header_hash = self._get_header_hash()
+    def __init__(self, users: dict, coins: dict):
+        self.genesis = None
+        self.blocks = None
+        self.header_hash = None
+        public, private = rsa.newkeys(1024)
+        self.public_key = public
+        self._private_key = private
+        self.other_public_keys = {}
 
         # pomocnicze
         self.users = users
@@ -32,6 +38,13 @@ class ChainManager:
         for name, user in users.items():
             user.hash = self.header_hash
             user.cm = self
+            self.other_public_keys[name] = user.public_key
+            user.other_public_keys['cm'] = self.public_key
+
+    def setup(self, genesis: Block):
+        self.genesis = genesis
+        self.blocks = [genesis]
+        self.header_hash = self._get_header_hash()
 
     def _get_hash(self, data: list):
         return hashlib.sha256(list_to_str(data).encode('utf-8')).hexdigest()
@@ -39,8 +52,8 @@ class ChainManager:
     def _get_header_hash(self):
         return self._get_hash(self.blocks)
 
-    def _add(self, data: str):
-        new_block = Block(self.header_hash, "'" + data + "'")
+    def _add(self, data: str, sender_private_key, sender):
+        new_block = Block(self.header_hash, "'" + data + "'", sender_private_key, sender)
         self.blocks.append(new_block)
         self.header_hash = self._get_header_hash()
 
@@ -48,7 +61,7 @@ class ChainManager:
         result = ''
         for block in self.blocks:
             result += str(block) + '\n'
-        result += f'HEADER HASH:\t{self.header_hash}'
+        result += f'\nHEADER HASH:\t{self.header_hash}\n'
         return result
 
     def validate(self) -> bool:
@@ -59,6 +72,19 @@ class ChainManager:
                 return False
         if not self.header_hash == self._get_hash(self.blocks):
             return False
+        return True
+
+    def validate_signatures(self) -> bool:
+        for i in range(1, len(self.blocks)):
+            block_to_check = self.blocks[i]
+            public_key = self.other_public_keys[block_to_check.sender.name]
+            decrypted = rsa.verify(
+                block_to_check.original_data.encode(),
+                block_to_check.signature,
+                public_key
+            )
+            if decrypted != 'SHA-1':
+                return False
         return True
 
     def make_transaction(self, transaction):
@@ -74,6 +100,6 @@ class ChainManager:
                 raise RuntimeError(f'{sender.name} nie ma id={coin_id} w swoim portfelu!')
 
         json = get_transaction_string(transaction)
-        self._add(json)
+        self._add(json, sender._private_key, sender)
         sender.hash = self.header_hash
         receiver.hash = self.header_hash

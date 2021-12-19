@@ -1,16 +1,21 @@
 import json
+import rsa
 
 
 class Block:
-    def __init__(self, prev_hash, data):
+    def __init__(self, prev_hash, data, private_key, sender):
         self.prev_hash = prev_hash
+        self.original_data = str(data)
+        self.sender = sender # do weryfikacji podpisów
+        #self.signature = rsa.encrypt(self.original_data.encode(), private_key)
+        self.signature = rsa.sign(self.original_data.encode(), private_key, 'SHA-1')
         self.set_data(data)
 
     def __str__(self):
-        return f"BLOCK:\t\t{self.prev_hash} -> {self.data}"
+        return f"\nBLOCK:\n\t-> {self.prev_hash} (poprzedni hash)\n\t-> {self.data}"
 
     def set_data(self, data):
-        self.data = "{'data': " + str(data) + "}"
+        self.data = "{'data': " + str(data) + ", 'signature': " + str(self.signature) + "}"
 
     def to_json(self):
         return json.dumps(self, default=lambda o: o.__dict__,
