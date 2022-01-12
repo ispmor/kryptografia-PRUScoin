@@ -64,11 +64,11 @@ def make_turn(cm):
         if len(tupled_result) > 1:
             user, hashed_pt, nonce = tupled_result[0], tupled_result[1], tupled_result[2]
             if cm.is_verified_by_other_users(hashed_pt, nonce):
-                cm._add(user.get_pending_transactions_string(), user._private_key, user)
+                cm._add(user.pending_transactions[0], nonce)
                 cm.notify_users_about_new_block(hashed_pt)
                 cm.reward_user(user)
                 cm.clear_all_pt()
-                break
+                return
 
 
 

@@ -1,6 +1,6 @@
 import rsa
 import hashlib
-
+from chain_manager import list_to_str
 
 class User:
     def __init__(self, name):
@@ -40,18 +40,12 @@ class User:
     def __str__(self):
         return self.name
 
-    def get_pending_transactions_string(self):
-        result = ''
-        for transaction_block in self.pending_transactions:
-            result += str(transaction_block) + ' '
-
-        return result
-
     def proof_of_work(self, difficulty_bits, max_nonce):
-        pt = self.get_pending_transactions_string()
+        new_blockchain_possibility = self.cm.blocks.copy() + self.pending_transactions
+        pt = list_to_str(new_blockchain_possibility)
         target = 2 ** (256 - difficulty_bits)
         for nonce in range(max_nonce):
-            hash_result = hashlib.sha256(str(self.hash).encode() + str(pt).encode() + str(nonce).encode()).hexdigest()
+            hash_result = hashlib.sha256(str(pt).encode() + str(nonce).encode()).hexdigest()
 
             # check if this is a valid result, below the target
             if int(hash_result, 16) < target:
@@ -64,7 +58,9 @@ class User:
 
 
     def verify_pow(self, pow, nonce):
-        hash_result = hashlib.sha256(str(self.hash).encode() + self.get_pending_transactions_string().encode() + str(nonce).encode()).hexdigest()
+        new_blockchain_possibility = self.cm.blocks.copy() + self.pending_transactions
+        pt = list_to_str(new_blockchain_possibility)
+        hash_result = hashlib.sha256(str(pt).encode() + str(nonce).encode()).hexdigest()
         return pow == hash_result
 
 

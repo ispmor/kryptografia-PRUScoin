@@ -53,14 +53,15 @@ class ChainManager:
         self.header_hash = self._get_header_hash()
 
     def _get_hash(self, data: list):
-        return hashlib.sha256(list_to_str(data).encode('utf-8')).hexdigest()
+        return hashlib.sha256(list_to_str(data).encode('utf-8') + str(self.nonce).encode()).hexdigest()
 
     def _get_header_hash(self):
         return self._get_hash(self.blocks)
 
-    def _add(self, data: str, sender_private_key, sender):
-        new_block = Block(self.header_hash, "'" + data + "'", sender_private_key, sender)
-        self.blocks.append(new_block)
+
+    def _add(self, transaction: Block, nonce):
+        self.blocks.append(transaction)
+        self.nonce = nonce
         self.header_hash = self._get_header_hash()
 
     def _add_to_pending_transactions(self, data: str, sender_private_key, sender):
