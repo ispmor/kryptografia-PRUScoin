@@ -4,6 +4,10 @@ from block import Block
 from chain_manager import ChainManager
 from user import User
 
+import multiprocessing as mp
+
+max_nonce = 2 ** 32
+difficulty = 5
 
 def load_json(filename: str) -> dict:
     input_file = open(filename)
@@ -49,6 +53,25 @@ def assign_other_public_keys(users: dict):
             if user1 is not user2:
                 user1.other_public_keys[name2] = user2.public_key
 
+
+def make_turn(cm):
+    pool = mp.Pool(mp.cpu_count())
+    result_objects = [pool.apply(user.proof_of_work, args=(difficulty, max_nonce)) for name, user in cm.users.items()]
+    results = result_objects# [r.get() for r in result_objects]
+    pool.close()
+    pool.join()
+    for tupled_result in results: # w pętli, gdyby trzeba było ponawiac weryfikację PoW. Jeżeli pierwszy winner uczciwy, to break
+        if len(tupled_result) > 1:
+            user, hashed_pt, nonce = tupled_result[0], tupled_result[1], tupled_result[2]
+            if cm.is_verified_by_other_users(hashed_pt, nonce):
+                cm._add(user.get_pending_transactions_string(), user._private_key, user)
+                cm.notify_users_about_new_block(hashed_pt)
+                cm.reward_user(user)
+                cm.clear_all_pt()
+                break
+
+
+
 if __name__ == "__main__":
     data = load_json("input.json")
 
@@ -80,7 +103,8 @@ if __name__ == "__main__":
 
     # ––– 3. PRZYKŁADY TRANSAKCJI –––
     for transaction in transactions:
-        cm.make_transaction(transaction)
+        cm.broadcast_to_pending_transactions(transaction)
+        make_turn(cm)
 
     print("STAN PORTFELI PO TRANSAKCJACH:")
     for name, user in users.items():

@@ -1,8 +1,10 @@
 import hashlib
+import random
 import rsa
-from rsa.pkcs1 import decrypt
 
 from block import Block
+
+PoW_found = False
 
 
 def get_hash(blocks: list):
@@ -21,6 +23,9 @@ def list_to_str(list: list):
     return result
 
 
+
+
+
 class ChainManager:
     def __init__(self, users: dict, coins: dict):
         self.genesis = None
@@ -34,6 +39,7 @@ class ChainManager:
         # pomocnicze
         self.users = users
         self.coins = coins
+        self.nonce = 0
 
         for name, user in users.items():
             user.hash = self.header_hash
@@ -56,6 +62,13 @@ class ChainManager:
         new_block = Block(self.header_hash, "'" + data + "'", sender_private_key, sender)
         self.blocks.append(new_block)
         self.header_hash = self._get_header_hash()
+
+    def _add_to_pending_transactions(self, data: str, sender_private_key, sender):
+        for name, user in self.users.items():
+            if random.randrange(100) < 90:
+                new_block = Block(self.header_hash, "'" + data + "'", sender_private_key, sender)
+                user.pending_transactions.append(new_block)
+
 
     def __str__(self):
         result = ''
@@ -100,6 +113,49 @@ class ChainManager:
                 raise RuntimeError(f'{sender.name} nie ma id={coin_id} w swoim portfelu!')
 
         json = get_transaction_string(transaction)
-        self._add(json, sender._private_key, sender)
+        self._add(json, sender._private_key,
+                  sender)  # tutaj dodanie do pending transactions, następnie całe pending transactions jest wkorzystywane w makeTurn()
         sender.hash = self.header_hash
         receiver.hash = self.header_hash
+
+    def broadcast_to_pending_transactions(self, transaction):
+        sender = self.users[transaction["from"]]
+        receiver = self.users[transaction["to"]]
+        coin_ids = transaction["coin_id"]
+
+        for coin_id in coin_ids:
+            if coin_id in sender.wallet:
+                receiver.wallet[coin_id] = self.coins[coin_id]
+                sender.wallet.pop(coin_id)
+            else:
+                raise RuntimeError(f'{sender.name} nie ma id={coin_id} w swoim portfelu!')
+
+        json = get_transaction_string(transaction)
+        self._add_to_pending_transactions(json, sender._private_key,
+                                          sender)  # tutaj dodanie do pending transactions, następnie całe pending transactions jest wkorzystywane w makeTurn()
+
+
+
+
+    def is_verified_by_other_users(self, hashed_pt, nonce):
+        verified = True
+        for name, user in self.users.items():
+            if not user.verify_pow(hashed_pt, nonce):
+                verified = False
+                break
+        print("POW VERIFIED BY USERS: ", verified)
+        return verified
+
+    def reward_user(self, user):
+        reward_value = 1
+        new_coin_id = str(int(sorted(self.coins.keys(), key=lambda x: int(x), reverse=True)[0]) + 1)
+        self.coins[new_coin_id] = reward_value
+        user.wallet[new_coin_id] = self.coins[new_coin_id]
+
+    def clear_all_pt(self):
+        for name, user in self.users.items():
+            user.clear_pending_transactions()
+
+    def notify_users_about_new_block(self, new_hash):
+        for name, user in self.users.items():
+            user.hash = new_hash
