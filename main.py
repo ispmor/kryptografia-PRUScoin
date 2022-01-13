@@ -4,10 +4,8 @@ from block import Block
 from chain_manager import ChainManager
 from user import User
 
-import multiprocessing as mp
-
-max_nonce = 2 ** 32
-difficulty = 5
+max_nonce = 2 ** 64
+difficulty = 16
 
 def load_json(filename: str) -> dict:
     input_file = open(filename)
@@ -54,7 +52,7 @@ def assign_other_public_keys(users: dict):
                 user1.other_public_keys[name2] = user2.public_key
 
 
-def make_turn(cm):
+def make_turn():
     pool = mp.Pool(mp.cpu_count())
     result_objects = [pool.apply(user.proof_of_work, args=(difficulty, max_nonce)) for name, user in cm.users.items()]
     results = result_objects# [r.get() for r in result_objects]
@@ -66,7 +64,8 @@ def make_turn(cm):
             if cm.is_verified_by_other_users(hashed_pt, nonce):
                 cm._add(user.pending_transactions[0], nonce)
                 cm.notify_users_about_new_block(hashed_pt)
-                cm.reward_user(user)
+                #cm.reward_user(user)
+                user.reward()
                 cm.clear_all_pt()
                 return
 
@@ -104,7 +103,7 @@ if __name__ == "__main__":
     # ––– 3. PRZYKŁADY TRANSAKCJI –––
     for transaction in transactions:
         cm.broadcast_to_pending_transactions(transaction)
-        make_turn(cm)
+        cm.make_turn(difficulty, max_nonce)
 
     print("STAN PORTFELI PO TRANSAKCJACH:")
     for name, user in users.items():

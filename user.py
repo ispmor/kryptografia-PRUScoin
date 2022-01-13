@@ -66,3 +66,7 @@ class User:
 
     def clear_pending_transactions(self):
         self.pending_transactions = []
+
+
+    def reward(self, coin_id, coin_value):
+        self.wallet[coin_id] = coin_value

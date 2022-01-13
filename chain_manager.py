@@ -1,6 +1,7 @@
 import hashlib
 import random
 import rsa
+import multiprocessing as mp
 
 from block import Block
 
@@ -147,11 +148,10 @@ class ChainManager:
         print("POW VERIFIED BY USERS: ", verified)
         return verified
 
-    def reward_user(self, user):
-        reward_value = 1
+    def create_new_coin(self, reward_value):
         new_coin_id = str(int(sorted(self.coins.keys(), key=lambda x: int(x), reverse=True)[0]) + 1)
         self.coins[new_coin_id] = reward_value
-        user.wallet[new_coin_id] = self.coins[new_coin_id]
+        return new_coin_id, reward_value
 
     def clear_all_pt(self):
         for name, user in self.users.items():
@@ -160,3 +160,21 @@ class ChainManager:
     def notify_users_about_new_block(self, new_hash):
         for name, user in self.users.items():
             user.hash = new_hash
+
+    def make_turn(self, difficulty, max_nonce):
+        pool = mp.Pool(mp.cpu_count())
+        result_objects = [pool.apply(user.proof_of_work, args=(difficulty, max_nonce)) for name, user in
+                          self.users.items()]
+        results = result_objects  # [r.get() for r in result_objects]
+        pool.close()
+        pool.join()
+        tupled_result = results[0]  # winner
+        if len(tupled_result) > 1:
+            user, hashed_pt, nonce = tupled_result[0], tupled_result[1], tupled_result[2]
+            if self.is_verified_by_other_users(hashed_pt, nonce):
+                self._add(user.pending_transactions[0], nonce)
+                self.notify_users_about_new_block(hashed_pt)
+                coin, coin_value = self.create_new_coin(1)
+                self.users[user.name].reward(coin, coin_value)
+                self.clear_all_pt()
+                return
