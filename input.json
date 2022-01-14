@@ -24,6 +24,15 @@
       "from": "Magnus",
       "to": "Alec",
       "coin_id": ["5"]
+    },
+    {
+      "from": "Alec",
+      "to": "Magnus",
+      "coin_id": ["1"]
+    },{
+      "from": "Alec",
+      "to": "Magnus",
+      "coin_id": ["2", "3"]
     }
   ]
 }

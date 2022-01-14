@@ -1,3 +1,5 @@
+import random
+
 import rsa
 import hashlib
 from chain_manager import list_to_str
@@ -44,13 +46,12 @@ class User:
         new_blockchain_possibility = self.cm.blocks.copy() + self.pending_transactions
         pt = list_to_str(new_blockchain_possibility)
         target = 2 ** (256 - difficulty_bits)
-        for nonce in range(max_nonce):
+        for i in range(max_nonce):
+            nonce = random.randint(0, max_nonce-1)
             hash_result = hashlib.sha256(str(pt).encode() + str(nonce).encode()).hexdigest()
 
             # check if this is a valid result, below the target
             if int(hash_result, 16) < target:
-                print("Success with nonce %d" % nonce)
-                print("Hash is %s" % hash_result)
                 return (self, hash_result, nonce)
 
         print("Failed after %d (max_nonce) tries" % nonce)

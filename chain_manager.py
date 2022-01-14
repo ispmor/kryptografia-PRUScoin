@@ -40,7 +40,8 @@ class ChainManager:
         # pomocnicze
         self.users = users
         self.coins = coins
-        self.nonce = 0
+        self.nonces = [None]
+        self.nonce = None
 
         for name, user in users.items():
             user.hash = self.header_hash
@@ -53,8 +54,12 @@ class ChainManager:
         self.blocks = [genesis]
         self.header_hash = self._get_header_hash()
 
-    def _get_hash(self, data: list):
-        return hashlib.sha256(list_to_str(data).encode('utf-8') + str(self.nonce).encode()).hexdigest()
+    def _get_hash(self, data: list, nonce=None):
+        if not nonce:
+            nonce = self.nonce
+        return hashlib.sha256(list_to_str(data).encode('utf-8') + str(nonce).encode()).hexdigest()
+
+
 
     def _get_header_hash(self):
         return self._get_hash(self.blocks)
@@ -64,6 +69,8 @@ class ChainManager:
         self.blocks.append(transaction)
         self.nonce = nonce
         self.header_hash = self._get_header_hash()
+        self.nonces.append(nonce)
+
 
     def _add_to_pending_transactions(self, data: str, sender_private_key, sender):
         for name, user in self.users.items():
@@ -80,8 +87,8 @@ class ChainManager:
         return result
 
     def validate(self) -> bool:
-        for i in range(1, len(self.blocks)):
-            actual = self._get_hash(self.blocks[:i])
+        for i in range(2, len(self.blocks)):
+            actual = self._get_hash(self.blocks[:i], self.nonces[i-1])
             expected = self.blocks[i].prev_hash
             if not actual == expected:
                 return False
@@ -145,7 +152,7 @@ class ChainManager:
             if not user.verify_pow(hashed_pt, nonce):
                 verified = False
                 break
-        print("POW VERIFIED BY USERS: ", verified)
+        print("Proof of Work has been verified by all users: ", verified)
         return verified
 
     def create_new_coin(self, reward_value):
@@ -172,6 +179,8 @@ class ChainManager:
         if len(tupled_result) > 1:
             user, hashed_pt, nonce = tupled_result[0], tupled_result[1], tupled_result[2]
             if self.is_verified_by_other_users(hashed_pt, nonce):
+                print("\tSuccess! found new working nonce: %d" % nonce)
+                print("\t\tNew hash mined:  %s" % hashed_pt)
                 self._add(user.pending_transactions[0], nonce)
                 self.notify_users_about_new_block(hashed_pt)
                 coin, coin_value = self.create_new_coin(1)
