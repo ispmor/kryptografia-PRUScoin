@@ -87,6 +87,8 @@ class ChainManager:
         return result
 
     def validate(self) -> bool:
+        if not self.validate_genesis():
+            return False
         for i in range(2, len(self.blocks)):
             actual = self._get_hash(self.blocks[:i], self.nonces[i-1])
             expected = self.blocks[i].prev_hash
@@ -187,3 +189,6 @@ class ChainManager:
                 self.users[user.name].reward(coin, coin_value)
                 self.clear_all_pt()
                 return
+
+    def validate_genesis(self):
+        return hashlib.sha256(list_to_str([self.blocks[0]]).encode('utf-8') + str(None).encode()).hexdigest() == self.blocks[1].prev_hash
