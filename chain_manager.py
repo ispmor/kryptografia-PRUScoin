@@ -1,7 +1,8 @@
 import hashlib
-import random
-import rsa
 import multiprocessing as mp
+import random
+
+import rsa
 
 from block import Block
 
@@ -22,9 +23,6 @@ def list_to_str(list: list):
     for block in list:
         result += str(block) + ' '
     return result
-
-
-
 
 
 class ChainManager:
@@ -59,11 +57,8 @@ class ChainManager:
             nonce = self.nonce
         return hashlib.sha256(list_to_str(data).encode('utf-8') + str(nonce).encode()).hexdigest()
 
-
-
     def _get_header_hash(self):
         return self._get_hash(self.blocks)
-
 
     def _add(self, transaction: Block, nonce):
         self.blocks.append(transaction)
@@ -71,13 +66,11 @@ class ChainManager:
         self.header_hash = self._get_header_hash()
         self.nonces.append(nonce)
 
-
     def _add_to_pending_transactions(self, data: str, sender_private_key, sender):
         for name, user in self.users.items():
             if random.randrange(100) < 90:
                 new_block = Block(self.header_hash, "'" + data + "'", sender_private_key, sender)
                 user.pending_transactions.append(new_block)
-
 
     def __str__(self):
         result = ''
@@ -90,7 +83,7 @@ class ChainManager:
         if not self.validate_genesis():
             return False
         for i in range(2, len(self.blocks)):
-            actual = self._get_hash(self.blocks[:i], self.nonces[i-1])
+            actual = self._get_hash(self.blocks[:i], self.nonces[i - 1])
             expected = self.blocks[i].prev_hash
             if not actual == expected:
                 return False
@@ -111,24 +104,6 @@ class ChainManager:
                 return False
         return True
 
-    def make_transaction(self, transaction):
-        sender = self.users[transaction["from"]]
-        receiver = self.users[transaction["to"]]
-        coin_ids = transaction["coin_id"]
-
-        for coin_id in coin_ids:
-            if coin_id in sender.wallet:
-                receiver.wallet[coin_id] = self.coins[coin_id]
-                sender.wallet.pop(coin_id)
-            else:
-                raise RuntimeError(f'{sender.name} nie ma id={coin_id} w swoim portfelu!')
-
-        json = get_transaction_string(transaction)
-        self._add(json, sender._private_key,
-                  sender)  # tutaj dodanie do pending transactions, następnie całe pending transactions jest wkorzystywane w makeTurn()
-        sender.hash = self.header_hash
-        receiver.hash = self.header_hash
-
     def broadcast_to_pending_transactions(self, transaction):
         sender = self.users[transaction["from"]]
         receiver = self.users[transaction["to"]]
@@ -144,9 +119,6 @@ class ChainManager:
         json = get_transaction_string(transaction)
         self._add_to_pending_transactions(json, sender._private_key,
                                           sender)  # tutaj dodanie do pending transactions, następnie całe pending transactions jest wkorzystywane w makeTurn()
-
-
-
 
     def is_verified_by_other_users(self, hashed_pt, nonce):
         verified = True
@@ -191,4 +163,5 @@ class ChainManager:
                 return
 
     def validate_genesis(self):
-        return hashlib.sha256(list_to_str([self.blocks[0]]).encode('utf-8') + str(None).encode()).hexdigest() == self.blocks[1].prev_hash
+        return hashlib.sha256(list_to_str([self.blocks[0]]).encode('utf-8') + str(None).encode()).hexdigest() == \
+               self.blocks[1].prev_hash
