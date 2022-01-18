@@ -4,6 +4,9 @@ from block import Block
 from chain_manager import ChainManager
 from user import User
 
+max_nonce = 2 ** 64
+difficulty = 16
+
 
 def load_json(filename: str) -> dict:
     input_file = open(filename)
@@ -30,7 +33,7 @@ def create_genesis_json(genesis: dict) -> list:
     result = list()
     for coin_id, name in genesis.items():
         result.append(f'Create {coin_id} to {name}')
-    return result # to musi być json??
+    return result  # to musi być json??
 
 
 def setup(genesis: dict, users: dict):
@@ -43,11 +46,13 @@ def setup(genesis: dict, users: dict):
 def get_transactions(data: dict) -> list:
     return data['transactions']
 
+
 def assign_other_public_keys(users: dict):
     for name1, user1 in users.items():
         for name2, user2 in users.items():
             if user1 is not user2:
                 user1.other_public_keys[name2] = user2.public_key
+
 
 if __name__ == "__main__":
     data = load_json("input.json")
@@ -67,7 +72,7 @@ if __name__ == "__main__":
         raise RuntimeError("Brak zgodności pomiędzy tablicą coinów a przypisaniem do userów")
 
     # ––– 2. CREATE BLOCKCHAIN –––
-    setup(genesis, users) # przypisz userom coiny
+    setup(genesis, users)  # przypisz userom coiny
     genesis_json = create_genesis_json(genesis)
     cm = ChainManager(users, coins)
     genesis_block = Block(None, genesis_json, cm._private_key, None)
@@ -80,7 +85,8 @@ if __name__ == "__main__":
 
     # ––– 3. PRZYKŁADY TRANSAKCJI –––
     for transaction in transactions:
-        cm.make_transaction(transaction)
+        cm.broadcast_to_pending_transactions(transaction)
+        cm.make_turn(difficulty, max_nonce)
 
     print("STAN PORTFELI PO TRANSAKCJACH:")
     for name, user in users.items():
@@ -95,7 +101,7 @@ if __name__ == "__main__":
     # ––– 4. WALIDACJA GENESIS –––
     print('SPRAWDZENIE PODPISU GENESIS (Alec):', users['Alec'].validate_genesis_signature())
     print()
-    
+
     # ––– 5. WALIDACJA TRANSAKCJI –––
     print('SPRAWDZENIE WSZYSTKICH PODPISÓW (CM):', cm.validate_signatures())
     print()
